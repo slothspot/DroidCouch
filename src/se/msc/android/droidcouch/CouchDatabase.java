@@ -238,7 +238,6 @@ public class CouchDatabase {
             Request(document.Id()).Query(batch ? "?batch=ok" : null).Data(CouchDocument.WriteJson(document)).Put().Check("Failed to write document").Result();
         document.Id(result.optString("id")); // Not really neeed
         document.Rev(result.optString("rev"));
-
         return document;
     }
 
