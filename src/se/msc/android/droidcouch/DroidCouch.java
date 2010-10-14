@@ -32,7 +32,7 @@ public class DroidCouch {
          * http://senior.ceng.metu.edu.tr/2009/praeda/2009/01/
          * 11/a-simple-restful-client-at-android/
          */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is), 8192);
         StringBuilder sb = new StringBuilder();
 
         String line = null;
