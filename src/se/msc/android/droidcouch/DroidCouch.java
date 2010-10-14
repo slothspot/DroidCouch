@@ -71,7 +71,7 @@ public class DroidCouch {
         try {
             HttpPut httpPutRequest = new HttpPut(hostUrl + databaseName + "/"
                     + docId);
-            StringEntity body = new StringEntity(jsonDoc.toString());
+            StringEntity body = new StringEntity(jsonDoc.toString(), "utf8");
             httpPutRequest.setEntity(body);
             httpPutRequest.setHeader("Accept", "application/json");
             httpPutRequest.setHeader("Content-type", "application/json");
@@ -226,7 +226,7 @@ public class DroidCouch {
             String docId = jsonDoc.getString("_id");
             HttpPut httpPutRequest = new HttpPut(hostUrl + databaseName + "/"
                     + docId);
-            StringEntity body = new StringEntity(jsonDoc.toString());
+            StringEntity body = new StringEntity(jsonDoc.toString(), "utf8");
             httpPutRequest.setEntity(body);
             httpPutRequest.setHeader("Accept", "application/json");
             httpPutRequest.setHeader("Content-type", "application/json");
