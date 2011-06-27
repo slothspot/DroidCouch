@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import android.util.Log;
 
@@ -60,6 +61,39 @@ public class DroidCouch {
             if (jsonResult != null) {
                 if (jsonResult.has("couchdb") && jsonResult.getString("couchdb").equals("Welcome") && jsonResult.has("version")) {
                     result = jsonResult.getString("version");
+                }
+            }
+        } catch (Exception e) {
+            // intentionally left empty
+        }
+        return result;
+    }
+
+    public static String generateUUID(String hostUrl) {
+        String[] result = generateUUIDs(hostUrl, 1);
+        if(result != null && result.length == 1)
+            return result[0];
+        return "";
+    }
+
+    public static String[] generateUUIDs(String hostUrl, int count){
+        String[] result = null;
+        try {
+            StringBuffer sb = new StringBuffer(hostUrl);
+            if(!hostUrl.endsWith("/")) sb.append("/");
+            sb.append("_uuids");
+            if(count > 1) sb.append("?count=").append(count);
+            HttpGet httpGetRequest = new HttpGet(sb.toString());
+            JSONObject jsonResult = sendCouchRequest(httpGetRequest);
+            if(jsonResult != null){
+                if(jsonResult.has("uuids")){
+                    JSONArray jsonArrayUUIDs = jsonResult.getJSONArray("uuids");
+                    if(count == jsonArrayUUIDs.length()){
+                        result = new String[count];
+                        for(int i = 0; i < count; i++){
+                            result[i] = jsonArrayUUIDs.getString(i);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
