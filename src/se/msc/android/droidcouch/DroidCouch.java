@@ -55,8 +55,8 @@ public class DroidCouch {
     public static String getServerVersion(String hostUrl) {
         String result = null;
         try {
-            HttpGet httpGetReqest = new HttpGet(hostUrl);
-            JSONObject jsonResult = sendCouchRequest(httpGetReqest);
+            HttpGet httpGetRequest = new HttpGet(hostUrl);
+            JSONObject jsonResult = sendCouchRequest(httpGetRequest);
             if (jsonResult != null) {
                 if (jsonResult.has("couchdb") && jsonResult.getString("couchdb").equals("Welcome") && jsonResult.has("version")) {
                     result = jsonResult.getString("version");
