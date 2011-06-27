@@ -57,7 +57,7 @@ public class DroidCouch {
         String result = null;
         try {
             HttpGet httpGetRequest = new HttpGet(hostUrl);
-            JSONObject jsonResult = sendCouchRequest(httpGetRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpGetRequest));
             if (jsonResult != null) {
                 if (jsonResult.has("couchdb") && jsonResult.getString("couchdb").equals("Welcome") && jsonResult.has("version")) {
                     result = jsonResult.getString("version");
@@ -84,7 +84,7 @@ public class DroidCouch {
             sb.append("_uuids");
             if(count > 1) sb.append("?count=").append(count);
             HttpGet httpGetRequest = new HttpGet(sb.toString());
-            JSONObject jsonResult = sendCouchRequest(httpGetRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpGetRequest));
             if(jsonResult != null){
                 if(jsonResult.has("uuids")){
                     JSONArray jsonArrayUUIDs = jsonResult.getJSONArray("uuids");
@@ -105,7 +105,7 @@ public class DroidCouch {
     public static boolean createDatabase(String hostUrl, String databaseName) {
         try {
             HttpPut httpPutRequest = new HttpPut(hostUrl + databaseName);
-            JSONObject jsonResult = sendCouchRequest(httpPutRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpPutRequest));
             return jsonResult.getBoolean("ok");
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +125,7 @@ public class DroidCouch {
             httpPutRequest.setEntity(body);
             httpPutRequest.setHeader("Accept", "application/json");
             httpPutRequest.setHeader("Content-type", "application/json");
-            JSONObject jsonResult = sendCouchRequest(httpPutRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpPutRequest));
             if (!jsonResult.getBoolean("ok")) {
                 return null; // Not ok!
             }
@@ -140,7 +140,7 @@ public class DroidCouch {
         try {
             HttpDelete httpDeleteRequest = new HttpDelete(hostUrl
                     + databaseName);
-            JSONObject jsonResult = sendCouchRequest(httpDeleteRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpDeleteRequest));
             return jsonResult.getBoolean("ok");
         } catch (Exception e) {
             e.printStackTrace();
@@ -171,7 +171,7 @@ public class DroidCouch {
         try {
             String url = hostUrl + databaseName + "/" + docId + "?rev=" + rev;
             HttpDelete httpDeleteRequest = new HttpDelete(url);
-            JSONObject jsonResult = sendCouchRequest(httpDeleteRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpDeleteRequest));
             if (jsonResult != null) {
                 return jsonResult.getBoolean("ok");
             }
@@ -227,7 +227,7 @@ public class DroidCouch {
         try {
             HttpGet httpGetRequest = new HttpGet(hostUrl + databaseName + "/"
                     + docId);
-            JSONObject jsonResult = sendCouchRequest(httpGetRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpGetRequest));
             if (jsonResult != null) {
                 return jsonResult;
             }
@@ -244,9 +244,9 @@ public class DroidCouch {
     }
 
     /**
-     * @return a Json object, null on error
+     * @return a String, null on error
      */
-    private static JSONObject sendCouchRequest(HttpUriRequest request) {
+    private static String sendCouchRequest(HttpUriRequest request) {
         try {
             HttpResponse httpResponse = (HttpResponse) new DefaultHttpClient()
                     .execute(request);
@@ -257,12 +257,28 @@ public class DroidCouch {
                 // Convert content stream to a String
                 String resultString = convertStreamToString(instream);
                 instream.close();
-                // Transform the String into a JSONObject
-                JSONObject jsonResult = new JSONObject(resultString);
-                return jsonResult;
+                return resultString;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static JSONObject getAsObject(String response){
+        try {
+            return new JSONObject(response);
+        } catch (Exception e){
+            Log.d(TAG, e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private static JSONArray getAsArray(String response){
+        try {
+            return new JSONArray(response);
+        } catch (Exception e){
+            Log.d(TAG, e.getMessage(), e);
         }
         return null;
     }
@@ -280,7 +296,7 @@ public class DroidCouch {
             httpPutRequest.setEntity(body);
             httpPutRequest.setHeader("Accept", "application/json");
             httpPutRequest.setHeader("Content-type", "application/json");
-            JSONObject jsonResult = sendCouchRequest(httpPutRequest);
+            JSONObject jsonResult = getAsObject(sendCouchRequest(httpPutRequest));
             if (!jsonResult.getBoolean("ok")) {
                 return null; // Not ok!
             }
@@ -299,7 +315,7 @@ public class DroidCouch {
             String url = hostUrl + databaseName
                     + "/_all_docs?include_docs=true";
             HttpGet httpGetRequest = new HttpGet(url);
-            JSONObject jsonReceive = sendCouchRequest(httpGetRequest);
+            JSONObject jsonReceive = getAsObject(sendCouchRequest(httpGetRequest));
             if (jsonReceive != null) {
                 return jsonReceive;
             }
