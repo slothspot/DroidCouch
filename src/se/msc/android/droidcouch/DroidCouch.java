@@ -102,6 +102,27 @@ public class DroidCouch {
         return result;
     }
 
+    public static String[] getDatabases(String hostUrl) {
+        String[] result = null;
+        try {
+            StringBuffer sb = new StringBuffer(hostUrl);
+            if(!hostUrl.endsWith("/")) sb.append("/");
+            sb.append("_all_dbs");
+            HttpGet httpGetRequest = new HttpGet(sb.toString());
+            JSONArray jsonResult = getAsArray(sendCouchRequest(httpGetRequest));
+            if(jsonResult != null){
+                int count = jsonResult.length();
+                result = new String[count];
+                for(int i = 0; i < count; i++){
+                    result[i] = jsonResult.getString(i);
+                }
+            }
+        } catch (Exception e) {
+            // intentionally left empty
+        }
+        return result;
+    }
+
     public static boolean createDatabase(String hostUrl, String databaseName) {
         try {
             HttpPut httpPutRequest = new HttpPut(hostUrl + databaseName);
